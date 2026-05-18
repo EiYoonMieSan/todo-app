@@ -41,7 +41,7 @@ so if we want to have int we need to do it like this
         # search/filter by keyword features
         # save to file, load from file
 
-import json
+import json #for files 
 
 
 tasks = [] # this is a list, rather than an array
@@ -88,6 +88,7 @@ while True:
     print("6. Remove task")
     print("7. Mark as done")
     print("8. Mark as undone")
+    print("9. Search task")
     print("0. Exit")
 
 
@@ -226,6 +227,28 @@ while True:
             tasks[index][1] = False
             # there should be error term
 
+      # search/filter tasks
+    elif choice == "9":
+        keyword = input("Enter task name to search: ").lower()
+        #.lower() so that the input is not case sensitive
+        #.lower() is a method, not a function
+        # method are essentially still a function but they are attached to an object
+        # normally in funciton, we do print(variable)
+        # in method, we do variable.lower()
+        # it is like this funciton is part of/ extension of/ or belong to that variable (object/class)
+
+        found = False
+        match_count = 0
+
+        for task in tasks:
+            if keyword in task[0].lower():
+                status = "✔" if task[1] else "x"
+                print(f"{status} {task[0]}")
+                found = True
+                match_count += 1
+
+        print(f"\n{match_count} out of {len(tasks)} tasks matched your input.")
+        
     # exit
     elif choice == "0":
         break
