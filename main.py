@@ -1,47 +1,5 @@
-"""
-notes on files
-
-two layers
-1. Memory (Python list)
-2. File (saved data on disk)
-
-Start program → LOAD file → tasks list
-Run program → modify tasks list
-Exit program → SAVE file → tasks.txt
-"""
-
-"""
-this is nested list, not a dictionary --> need to upgrade to dic after this
-tasks = [
-    ["study", False],
-    ["eat", True]
-]
-
-enumerate() --> let me loop through a list and automatically get the index (position) at the same time
-
- for i, task in enumerate(tasks): # u must first show the list for them to choose
-        name = task[0]
-        status = task[1]
-
-        print(f"{i+1}. {name}- {status}")
-here i am getting 1. 2 .3. according to the index number coz of enumerate() function.
-if i just use
-    for task in tasks:
-this will just loop, without showing index number.
-
-
-input() always give strings even if the user type the number
-so if we want to have int we need to do it like this
-    int(input())
-"""
-
- # things to add in the code
-        # to be able to mark multiple task at one time
-        # i want them to order alphabatically later, or order in priority later
-        # search/filter by keyword features
-        # save to file, load from file
-
 import json #for files 
+import os  # for temporary files -->  replacing the files with temporary files
 
 
 tasks = [] # this is a list, rather than an array
@@ -50,7 +8,7 @@ tasks = [] # this is a list, rather than an array
 #load tasks from JSON file when program starts
 #using JSON coz the simple txt file format can corrupt easily if it is manually edied from the files
 try:
-    with open("tasks.txt", "r") as file:
+    with open("tasks.json", "r") as file:
         tasks = json.load(file)
 except:
     tasks = []
@@ -196,6 +154,8 @@ while True:
             print("Task removed!")
         else:                           # i still need this part. coz this part is for the wrong number of tasks or handles valid integers outside task range,
             print("Invalid input")     # while the above try except one is for handling program crashs for input that are not integer or for the input that cannot be converted into integers
+    
+    
     # mark as done
     elif choice == "7":
         view_tasks(tasks) # u must first show the list for them to choose
@@ -211,6 +171,7 @@ while True:
         if 0 <= index < len(tasks):
             tasks[index][1] = True
 
+    
     # mark as undone
     elif choice == "8":
         view_tasks(tasks) # u must first show the list for them to choose
@@ -227,7 +188,8 @@ while True:
             tasks[index][1] = False
             # there should be error term
 
-      # search/filter tasks
+    
+    # search/filter tasks
     elif choice == "9":
         keyword = input("Enter task name to search: ").lower()
         #.lower() so that the input is not case sensitive
@@ -256,6 +218,60 @@ while True:
     else:
         print("Invalid input")
 
-# save tasks to JSON file when program closes
-with open("tasks.txt", "w") as file:
+# save tasks to temp JSON file first
+with open("tasks_tmp.json", "w") as file:
     json.dump(tasks, file)
+
+# save edited tasks to the json file when program closes
+os.replace("tasks_tmp.json", "tasks.json")
+
+###########################################################################################################################################
+
+"""
+notes on files
+
+two layers
+1. Memory (Python list)
+2. File (saved data on disk)
+
+Start program → LOAD file → tasks list
+Run program → modify tasks list
+Exit program → SAVE file → tasks.txt
+
+
+///
+but this way, if there is some errors while overwriting the old file and
+saving it as new file, there can be file corruption.
+So instead, do this.
+first, when saving the new data, write it to temporary file.
+only when the temporary file finished writing, save or overwrite the data to the old file (tasks.json)
+
+import os
+os.replace("tasks_tmp.json", "tasks.json")
+"""
+#######################################################
+"""
+this is nested list, not a dictionary --> need to upgrade to dic after this
+tasks = [
+    ["study", False],
+    ["eat", True]
+]
+
+enumerate() --> let me loop through a list and automatically get the index (position) at the same time
+
+ for i, task in enumerate(tasks): # u must first show the list for them to choose
+        name = task[0]
+        status = task[1]
+
+        print(f"{i+1}. {name}- {status}")
+here i am getting 1. 2 .3. according to the index number coz of enumerate() function.
+if i just use
+    for task in tasks:
+this will just loop, without showing index number.
+
+
+input() always give strings even if the user type the number
+so if we want to have int we need to do it like this
+    int(input())
+"""
+###########################################################
