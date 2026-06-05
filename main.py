@@ -1,6 +1,6 @@
-import json #for files 
+import json # for files 
 import os  # for temporary files -->  replacing the files with temporary files
-
+import difflib # for comparing text similiarity for search tasks
 
 tasks = [] # this is a list, rather than an array
 
@@ -190,27 +190,29 @@ while True:
 
     
     # search/filter tasks
-    elif choice == "9":
+     elif choice == "9":
         keyword = input("Enter task name to search: ").lower()
-        #.lower() so that the input is not case sensitive
-        #.lower() is a method, not a function
-        # method are essentially still a function but they are attached to an object
-        # normally in funciton, we do print(variable)
-        # in method, we do variable.lower()
-        # it is like this funciton is part of/ extension of/ or belong to that variable (object/class)
+        #.lower() to fix case sensitivity
 
         found = False
         match_count = 0
 
         for task in tasks:
-            if keyword in task[0].lower():
+            words = task[0].lower().split() # spliting the to feed the cat into "to, feed, the, cat" to make word to word fuzzy search
+
+            matches = difflib.get_close_matches (keyword, words, n = 3, cutoff = 0.6)
+
+            if matches:
                 status = "✔" if task[1] else "x"
                 print(f"{status} {task[0]}")
                 found = True
                 match_count += 1
 
         print(f"\n{match_count} out of {len(tasks)} tasks matched your input.")
-        
+
+        if not found:
+            print("No close matches found.")
+    
     # exit
     elif choice == "0":
         break
