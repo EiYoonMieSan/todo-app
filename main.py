@@ -17,11 +17,12 @@ def view_tasks(tasks):
     for i, task in enumerate(tasks): # u must first show the list for them to choose
         name = task[0]
         status = task[1]
+        priority = task[2]
 
         if status: # this syntax is the same with if status == True, for true u don't need to add == True. But if u want u can add that too.
-            print(f"{i+1}. ✔ {name}")
+            print(f"{i+1}. ✔ {name}\t{priority}")
         else:
-            print(f"{i+1}. x {name}")
+            print(f"{i+1}. x {name}\t{priority}")
 
     show_progress(tasks)
 
@@ -42,11 +43,13 @@ while True:
     print("2. View tasks")
     print("3. View only completed tasks")
     print("4. View only unfinished tasks")
-    print("5. Edit task")
-    print("6. Remove task")
-    print("7. Mark as done")
-    print("8. Mark as undone")
-    print("9. Search task")
+    print("5. View tasks by priority")
+    print("6. Edit task")
+    print("7. Remove task")
+    print("8. Mark as done")
+    print("9. Mark as undone")
+    print("10. Edit priority")
+    print("11. Search task")
     print("0. Exit")
 
 
@@ -54,9 +57,25 @@ while True:
 
     # add task
     if choice == "1":
-        task = input("Enter task: ")
-        tasks.append([task, False])
-        print("Task added!")
+         while True:
+            task = input("Enter task: ").strip()
+
+            if task == "":
+                print("Task name can't be blank.")
+            else:
+                break  # Input is valid, exit the loop
+
+         while True:
+            priority = input("Priority (low/medium/high): ").lower() # asking input for the priority from the user
+
+        # making sure that the user doesn't input random thing except low, medium, and high // input validation
+            if priority in ["low", "medium", "high"]:
+                tasks.append([task, False, priority])
+                print("Task added!")
+                break
+            else:
+                print("Invalid priority. Please type low, medium, or high.")
+
 
     # view task
     elif choice == "2":
@@ -76,7 +95,7 @@ while True:
             for task in tasks:
                 if task[1] == True:
                     count += 1
-                    print(f"{count}. {task[0]}")
+                    print(f"{count}. {task[0]}\t{task[2]}")
                     found = True
 
             if not found:
@@ -94,7 +113,7 @@ while True:
             for task in tasks:
                 if task[1] == False:
                     count += 1
-                    print(f"{count}. {task[0]}")
+                    print(f"{count}. {task[0]}\t{task[2]}")
                     found = True
 
             if not found:
@@ -109,9 +128,76 @@ while True:
 
         print(f"{undone_count} out of {total} tasks are still unfinished")
 
+     # view tasks by priority
+    elif choice == "5":
+        if len(tasks) == 0:
+            print("No tasks yet.")
+        else:
+            print()
+            print ("High priority tasks:")
+
+            found = False
+            count = 0
+
+            for task in tasks:
+                if task[2] == "high":
+                    count += 1
+
+                    status = task[1]
+                    if status:
+                        print(f"{count}.  ✔ {task[0]}")
+                    else:
+                        print(f"{count}. x {task[0]}")
+
+                    found = True
+
+            if not found:
+                print("There is no high priority task.")
+
+            print() # adding a blank line
+            print ("Medium priority tasks:")
+
+            found = False
+            count = 0
+
+            for task in tasks:
+                if task[2] == "medium":
+                    count += 1
+
+                    status = task[1]
+                    if status:
+                        print(f"{count}.  ✔ {task[0]}")
+                    else:
+                        print(f"{count}. x {task[0]}")
+
+                    found = True
+
+            if not found:
+                print("There is no medium priority task.")
+
+            print()
+            print ("Low priority tasks:")
+            found = False
+            count = 0
+
+            for task in tasks:
+                if task[2] == "low":
+                    count += 1
+
+                    status = task[1]
+                    if status:
+                        print(f"{count}.  ✔ {task[0]}")
+                    else:
+                        print(f"{count}. x {task[0]}")
+
+                    found = True
+
+            if not found:
+                print("There is no low priority task.")
+
 
     # edit task
-    elif choice == "5":
+    elif choice == "6":
         view_tasks(tasks)
 
         try:
@@ -132,12 +218,12 @@ while True:
 
             print("Task updated!")
             print("To change status, use 'Mark as done/undone' option.")
-
+            print("To change priority, use 'Edit priority' option.")
         else:
             print("Invalid input")
 
     # remove task
-    elif choice == "6":
+    elif choice == "7":
 
         view_tasks(tasks)# user needs to see the list first to decide which no to remove
 
@@ -157,7 +243,7 @@ while True:
     
     
     # mark as done
-    elif choice == "7":
+    elif choice == "8":
         view_tasks(tasks) # u must first show the list for them to choose
 
         try:
@@ -173,7 +259,7 @@ while True:
 
     
     # mark as undone
-    elif choice == "8":
+    elif choice == "9":
         view_tasks(tasks) # u must first show the list for them to choose
 
         try:
@@ -189,8 +275,32 @@ while True:
             # there should be error term
 
     
+    # edit priority
+     elif choice == "10":
+        view_tasks(tasks) # u must first show the list for them to choose
+
+        try:
+            index = int(input("Which task number's priority do you want to edit? ")) - 1
+            #this will be the no user choose
+            #to readjust the i+1 above
+        except:
+            print("Invalid input")
+            continue
+
+        if 0 <= index < len(tasks):
+            while True:
+                tasks[index][2] = input("Priority (low/medium/high): ").lower() # asking input for the priority from the user
+
+                # making sure that the user doesn't input random thing except low, medium, and high // input validation
+                if tasks[index][2] in ["low", "medium", "high"]:
+                    print("Priority changed successfully!")
+                    break
+                else:
+                    print("Invalid priority. Please type low, medium, or high.")
+                    
+
     # search/filter tasks
-     elif choice == "9":
+     elif choice == "11":
         keyword = input("Enter task name to search: ").lower()
         #.lower() to fix case sensitivity
 
