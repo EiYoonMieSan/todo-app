@@ -224,23 +224,35 @@ while True:
 
     # remove task
     elif choice == "7":
+        if len(tasks) == 0:
+            print("No tasks yet.")
+        else:
+            while True:
+                view_tasks(tasks)# user needs to see the list first to decide which no to remove
 
-        view_tasks(tasks)# user needs to see the list first to decide which no to remove
+                try:
+                    index = int(input("Which task number to remove? (Type 99 if you no longer want to remove any tasks.)")) - 1
+                    #this will be the no user choose
+                    #to readjust the i+1 above
+                except:
+                    print("Invalid input. Please enter a valid task number.")
+                    continue
 
-        try:
-            index = int(input("Which task number to remove? ")) - 1
-            #this will be the no user choose
-            #to readjust the i+1 above
-        except:
-            print("Invalid input")
-            continue
+                if 0 <= index < len(tasks):
+                    tasks.pop(index)
+                    print("Task removed!")
+                elif index == 98:
+                    break
+                else:                           # i still need this part. coz this part is for the wrong number of tasks or handles valid integers outside task range,
+                    print("Invalid input. That task number does not exist.")     # while the above try except one is for handling program crashs for input that are not integer or for the input that cannot be converted into integers
+                    continue
 
-        if 0 <= index < len(tasks):
-            tasks.pop(index)
-            print("Task removed!")
-        else:                           # i still need this part. coz this part is for the wrong number of tasks or handles valid integers outside task range,
-            print("Invalid input")     # while the above try except one is for handling program crashs for input that are not integer or for the input that cannot be converted into integers
-    
+                remove_more_tasks = input("Do you want to remove more tasks (type n for no and any key for yes)?").lower().strip()
+                if remove_more_tasks in ['n','no']:
+                    break
+                else:
+                    continue
+                
     
     # mark as done
     elif choice == "8":
