@@ -227,31 +227,35 @@ while True:
         if len(tasks) == 0:
             print("No tasks yet.")
         else:
-            while True:
-                view_tasks(tasks)# user needs to see the list first to decide which no to remove
+             view_tasks(tasks)# user needs to see the list first to decide which no to remove
 
-                try:
-                    index = int(input("Which task number to remove? (Type 99 if you no longer want to remove any tasks.)")) - 1
-                    #this will be the no user choose
-                    #to readjust the i+1 above
-                except:
-                    print("Invalid input. Please enter a valid task number.")
-                    continue
+            # just asking for input here, need to remind the user that they must add spaces between tasks
+            user_input = input("Enter the task numbers you want to remove (e.g., 1 5 16), or type q to cancel: ")
 
+            if user_input.lower().strip() == "q":
+                print("Deletion canceled.")
+                continue
+
+            tasks_to_delete = user_input.split() # tasks_to_delete is a list. but it will be list of strings.
+
+            indexes_to_delete = [] # creating an empty list for real math numbers list.
+
+            for task in tasks_to_delete:
+                index = int(task)-1
+
+                # checking the number the user type is in the tasks list
                 if 0 <= index < len(tasks):
+                    indexes_to_delete.append(index) # adding the tasks no that are to be deleted. not yet deleting anything
+                else:
+                    print(f"Task number {task} does not exist. Skipping it.")
+
+            # sort in revesre and deleting
+            indexes_to_delete.sort(reverse = True)
+                for index in indexes_to_delete:
                     tasks.pop(index)
                     print("Task removed!")
-                elif index == 98:
-                    break
-                else:                           # i still need this part. coz this part is for the wrong number of tasks or handles valid integers outside task range,
-                    print("Invalid input. That task number does not exist.")     # while the above try except one is for handling program crashs for input that are not integer or for the input that cannot be converted into integers
-                    continue
 
-                remove_more_tasks = input("Do you want to remove more tasks (type n for no and any key for yes)?").lower().strip()
-                if remove_more_tasks in ['n','no']:
-                    break
-                else:
-                    continue
+
                 
     
     # mark as done
