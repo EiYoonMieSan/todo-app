@@ -230,30 +230,41 @@ while True:
              view_tasks(tasks)# user needs to see the list first to decide which no to remove
 
             # just asking for input here, need to remind the user that they must add spaces between tasks
-            user_input = input("Enter the task numbers you want to remove (e.g., 1 5 16), or type q to cancel: ")
+            user_input = input("Enter the task numbers you want to remove separated by SPACES (e.g., 1 5 16), or type q to cancel: ")
 
             if user_input.lower().strip() == "q":
                 print("Deletion canceled.")
-                continue
+                continue # why continue --> coz by continue, everything below will be skipped and this will bring back to the while main menu loop
+            # but if i write break here, the code end. it means the nearest loop got end. so the while main menu loop will end.
+
+            # i need to add input validation here. but it is difficult to make input validation with if else here.
+            # u will have to check if the code is 1,2,3 or 1,2, hello or just random words etc
+            # there are too many possibility for the error and too many things to check
+            # thus, we are gonna use try except here. Let's the user input things. and then check if those inputs are workable.
+
 
             tasks_to_delete = user_input.split() # tasks_to_delete is a list. but it will be list of strings.
 
             indexes_to_delete = [] # creating an empty list for real math numbers list.
 
             for task in tasks_to_delete:
-                index = int(task)-1
+                try:
+                    index = int(task)-1
 
-                # checking the number the user type is in the tasks list
-                if 0 <= index < len(tasks):
-                    indexes_to_delete.append(index) # adding the tasks no that are to be deleted. not yet deleting anything
-                else:
-                    print(f"Task number {task} does not exist. Skipping it.")
+                    # checking the number the user type is in the tasks list
+                    if 0 <= index < len(tasks):
+                        indexes_to_delete.append(index) # adding the tasks no that are to be deleted. not yet deleting anything
+                    else:
+                        print(f"Task number {task} does not exist. Skipping it.")
+                except ValueError:
+                    print("Invalid input.")
 
             # sort in revesre and deleting
-            indexes_to_delete.sort(reverse = True)
-                for index in indexes_to_delete:
-                    tasks.pop(index)
-                    print("Task removed!")
+            if len(indexes_to_delete) > 0:
+                indexes_to_delete.sort(reverse = True)
+                    for index in indexes_to_delete:
+                        tasks.pop(index)
+                        print("Task removed!")
 
 
                 
