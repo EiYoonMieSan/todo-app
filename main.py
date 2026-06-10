@@ -271,35 +271,76 @@ while True:
     
     # mark as done
     elif choice == "8":
-        view_tasks(tasks) # u must first show the list for them to choose
+        if len(tasks) == 0:
+            print("No tasks yet.")
+        else:
+            view_tasks(tasks)
 
-        try:
-            index = int(input("Which task number is done? ")) - 1
-            #this will be the no user choose
-            #to readjust the i+1 above
-        except:
-            print("Invalid input")
-            continue
+            user_input = input("Enter task numbers to mark as DONE separated by SPACES (e.g., 1 5 16), or type q to cancel: ")
 
-        if 0 <= index < len(tasks):
-            tasks[index][1] = True
+            if user_input.lower().strip() == "q":
+                print("Mark as done is canceled.")
+                continue
+
+            tasks_to_mark = user_input.split()
+            indexes_to_mark = []
+
+            for task in tasks_to_mark:
+                try:
+                    index = int(task) - 1
+
+                    if 0 <= index < len(tasks):
+                        if index not in indexes_to_mark:
+                            indexes_to_mark.append(index)
+                    else:
+                        print(f"Task number {task} does not exist.")
+                except ValueError:
+                    print(f"'{task}' is not a valid task number.")
+
+            # Update the status
+            if len(indexes_to_mark) > 0:
+                for index in indexes_to_mark:
+                    tasks[index][1] = True
+                print("Selected tasks marked as completed!")
+            else:
+                print("No tasks were changed.")
 
     
     # mark as undone
     elif choice == "9":
-        view_tasks(tasks) # u must first show the list for them to choose
+       if len(tasks) == 0:
+            print("No tasks yet.")
+        else:
+            view_tasks(tasks)
 
-        try:
-            index = int(input("Which task number is undone? ")) - 1
-            #this will be the no user choose
-            #to readjust the i+1 above
-        except:
-            print("Invalid input")
-            continue
+            user_input = input("Enter task numbers to mark as undone separated by SPACES (e.g., 1 5 16), or type q to cancel: ")
 
-        if 0 <= index < len(tasks):
-            tasks[index][1] = False
-            # there should be error term
+            if user_input.lower().strip() == "q":
+                print("Mark is undone is canceled.")
+                continue
+
+            tasks_to_mark = user_input.split()
+            indexes_to_mark = []
+
+            for task in tasks_to_mark:
+                try:
+                    index = int(task) - 1
+
+                    if 0 <= index < len(tasks):
+                        if index not in indexes_to_mark:
+                            indexes_to_mark.append(index)
+                    else:
+                        print(f"Task number {task} does not exist.")
+                except ValueError:
+                    print(f"'{task}' is not a valid task number.")
+
+            # Update the status
+            if len(indexes_to_mark) > 0:
+                for index in indexes_to_mark:
+                    tasks[index][1] = False
+                print("Selected tasks marked as unfinished!")
+            else:
+                print("No tasks were changed.")
 
     
     # edit priority
@@ -414,3 +455,26 @@ so if we want to have int we need to do it like this
     int(input())
 """
 ###########################################################
+
+"""
+when to use input validation and error handling (try except)?
+input validation --> checking before the program used this data
+like checking if the user input is correct usable number and not random words
+
+try except --> after the program used this data, the data is not there, then the program crash, try except is used to prevent program crash
+like the user type a valid number like 9, but the array only has 6 lists, then since 9 is not there in the program, the program crash
+use try except in this scenario
+"""
+
+
+"""
+error type of exception
+four main types
+1. ValueError --> wrong type of data error -- like converting hello into int
+2. IndexError --> out of bounds error -- eg. happens when you try to grab sth from a list using a number that doesn't exist
+3. TypeError --> mixing apples and organes error -- eg. happens when u try to combine two types of data like 5 + "apples"
+4. ZeroDivisionError --> impossible math error -- happens when the code tries to divide a number by zero -- 10/0
+"""
+
+#####################################################################################
+
