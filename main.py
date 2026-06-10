@@ -15,9 +15,9 @@ except:
 
 def view_tasks(tasks):
     for i, task in enumerate(tasks): # u must first show the list for them to choose
-        name = task[0]
-        status = task[1]
-        priority = task[2]
+        name = task["name"]
+        status = task["status"]
+        priority = task["priority"]
 
         if status: # this syntax is the same with if status == True, for true u don't need to add == True. But if u want u can add that too.
             print(f"{i+1}. ✔ {name}\t{priority}")
@@ -31,7 +31,7 @@ def show_progress(tasks):
     done_count = 0
 
     for task in tasks:
-        if task[1]: # if task[1], which is status, == True
+        if task["status"]: # if task[1], which is status, == True
             done_count += 1
 
     print(f"{done_count} out of {total} tasks completed")
@@ -58,9 +58,9 @@ while True:
     # add task
     if choice == "1":
          while True:
-            task = input("Enter task: ").strip()
+            task_name = input("Enter task: ").strip()
 
-            if task == "":
+            if task_name == "":
                 print("Task name can't be blank.")
             else:
                 break  # Input is valid, exit the loop
@@ -70,7 +70,7 @@ while True:
 
         # making sure that the user doesn't input random thing except low, medium, and high // input validation
             if priority in ["low", "medium", "high"]:
-                tasks.append([task, False, priority])
+                tasks.append({"name": task_name, "status": False, "priority": priority})
                 print("Task added!")
                 break
             else:
@@ -93,9 +93,9 @@ while True:
             count = 0
 
             for task in tasks:
-                if task[1] == True:
+                if task["staus"] == True:
                     count += 1
-                    print(f"{count}. {task[0]}\t{task[2]}")
+                    print(f"{count}. {task['name']}\t{task['priority']}")
                     found = True
 
             if not found:
@@ -111,9 +111,9 @@ while True:
             count = 0
 
             for task in tasks:
-                if task[1] == False:
+                if task["status"] == False:
                     count += 1
-                    print(f"{count}. {task[0]}\t{task[2]}")
+                    print(f"{count}. {task['name']}\t{task['priority']}")
                     found = True
 
             if not found:
@@ -123,7 +123,7 @@ while True:
         undone_count = 0
 
         for task in tasks:
-            if task[1] == False:
+            if task["status"] == False:
                 undone_count += 1
 
         print(f"{undone_count} out of {total} tasks are still unfinished")
@@ -140,14 +140,14 @@ while True:
             count = 0
 
             for task in tasks:
-                if task[2] == "high":
+                if task["priority"] == "high":
                     count += 1
 
-                    status = task[1]
+                    status = task["status"]
                     if status:
-                        print(f"{count}.  ✔ {task[0]}")
+                        print(f"{count}.  ✔ {task['name']}")
                     else:
-                        print(f"{count}. x {task[0]}")
+                        print(f"{count}. x {task['name']}")
 
                     found = True
 
@@ -161,14 +161,14 @@ while True:
             count = 0
 
             for task in tasks:
-                if task[2] == "medium":
+                if task["priority"] == "medium":
                     count += 1
 
                     status = task[1]
                     if status:
-                        print(f"{count}.  ✔ {task[0]}")
+                        print(f"{count}.  ✔ {task['name']}")
                     else:
-                        print(f"{count}. x {task[0]}")
+                        print(f"{count}. x {task['name']}")
 
                     found = True
 
@@ -181,14 +181,14 @@ while True:
             count = 0
 
             for task in tasks:
-                if task[2] == "low":
+                if task["priority"] == "low":
                     count += 1
 
-                    status = task[1]
+                    status = task["status"]
                     if status:
-                        print(f"{count}.  ✔ {task[0]}")
+                        print(f"{count}.  ✔ {task['name']}")
                     else:
-                        print(f"{count}. x {task[0]}")
+                        print(f"{count}. x {task['name']}")
 
                     found = True
 
@@ -214,7 +214,7 @@ while True:
 
         if 0 <= index < len(tasks): # index, the no the user choose should be > or = 0 and less than the length of the array
             new_task = input("Enter new task: ")
-            tasks[index][0] = new_task
+            tasks[index]["name"] = new_task
 
             print("Task updated!")
             print("To change status, use 'Mark as done/undone' option.")
@@ -357,10 +357,10 @@ while True:
 
         if 0 <= index < len(tasks):
             while True:
-                tasks[index][2] = input("Priority (low/medium/high): ").lower() # asking input for the priority from the user
+                tasks[index]["priority"] = input("Priority (low/medium/high): ").lower() # asking input for the priority from the user
 
                 # making sure that the user doesn't input random thing except low, medium, and high // input validation
-                if tasks[index][2] in ["low", "medium", "high"]:
+                if tasks[index]["priority"] in ["low", "medium", "high"]:
                     print("Priority changed successfully!")
                     break
                 else:
@@ -376,13 +376,13 @@ while True:
         match_count = 0
 
         for task in tasks:
-            words = task[0].lower().split() # spliting the to feed the cat into "to, feed, the, cat" to make word to word fuzzy search
+            words = task["name"].lower().split() # spliting the to feed the cat into "to, feed, the, cat" to make word to word fuzzy search
 
             matches = difflib.get_close_matches (keyword, words, n = 3, cutoff = 0.6)
 
             if matches:
                 status = "✔" if task[1] else "x"
-                print(f"{status} {task[0]}")
+                print(f"{status} {task['name']}")
                 found = True
                 match_count += 1
 
@@ -404,9 +404,11 @@ with open("tasks_tmp.json", "w") as file:
 
 # save edited tasks to the json file when program closes
 os.replace("tasks_tmp.json", "tasks.json")
+print("Goodbye!")
+
 
 ###########################################################################################################################################
-
+#NOTES FOR MYSELF
 """
 notes on files
 
@@ -478,3 +480,35 @@ four main types
 
 #####################################################################################
 
+"""
+Dictionary vs nested list
+so the main benefit of dic is that the programmer no longer need to remember which index means which
+eg. list --> task[2]
+dic --> task["priority"]
+
+big O notation
+list --> O(n) linear time
+If you want to find a task named "Buy Milk" in a list,
+Python has to start at index 0 and check every single item one by one until it finds it.
+If you have 1 million tasks, it might take 1 million checks.
+
+dic --> O(1) constant time
+ictionaries use a math trick called a Hash Table.
+Python instantly calculates exactly where task["name"] is stored in your computer's memory.
+Whether you have 4 tasks or 4 million tasks, finding a key takes exactly one step.
+
+memory cost --> list use less memory than dic
+Because lists are just simple, raw rows of data, they use less RAM.
+Dictionaries require extra memory behind the scenes to build and maintain their hash tables.
+it uses about 2 to 4 times more ram than a simple list.
+however, for todo app, the memory difference is microscopic.
+then when do the differnce become large --> when we use it in data science, ai, high volume networking. in short when it becomes big data.
+
+
+if the taks list is small we can just add a note at the end
+such as index 0 = name, index 1 = status. But the programmer needs to alwasy go back to the note which is torublesome
+so it is a good practice to use dic if the memory differnce is not that much
+"""
+
+
+####################################################
