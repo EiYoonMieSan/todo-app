@@ -2,15 +2,17 @@
 import pickle #replace instead of json to store and load class object
 import os  # for temporary files -->  replacing the files with temporary files
 import difflib # for comparing text similiarity for search tasks // difflib = difference library // a module for comparing differences between text or sequences
+from datetime import datetime, date # for the duedate
 
 #blueprint for the task
 class Task:
     #constructor
-    def __init__(self, name, priority):
+    def __init__(self, name, priority, due_date =None):
         self.name = name
         self.status = False
         self.priority = priority
-        
+        self.due_date = due_date
+    
     #just normal function this blueprint will have
     def mark_done(self):
         self.status = True
@@ -31,17 +33,38 @@ except:
     tasks = []
 
 def view_tasks(tasks):
-    for i, task in enumerate(tasks): # u must first show the list for them to choose
-        name = task.name
-        status = task.status
-        priority = task.priority
+    for i, task in enumerate(tasks):
 
-        if task.status: # this syntax is the same with if status == True, for true u don't need to add == True. But if u want u can add that too.
-            print(f"{i+1}. ✔ {name}\t{priority}")
+        status = "✔" if task.status else "✘"
+
+        if task.due_date is None:
+            due_date = "-"
+            days_left = "-"
         else:
-            print(f"{i+1}. x {name}\t{priority}")
+            due_date = task.due_date
+
+            difference = (task.due_date - date.today()).days
+
+            if difference > 0:
+                days_left = f"{difference} days"
+
+            elif difference == 0:
+                days_left = "Today"
+
+            else:
+                days_left = f"OVERDUE ({abs(difference)})"
+
+        print(
+            f"{i+1:<4} "
+            f"{status:<7} "
+            f"{task.name:<30} "
+            f"{task.priority.capitalize():<10} "
+            f"{str(due_date):<12} "
+            f"{days_left}"
+        )
 
     show_progress(tasks)
+
 
 def show_progress(tasks):
     total = len(tasks) #checking the total number of tasks
@@ -63,7 +86,7 @@ def view_completed(tasks):
         for task in tasks:
             if task.status == True:
                 count += 1
-                print(f"{count}. {task.name}\t{task.priority}")
+                print(f"{count}. {task.name}\t{task.priority}\t{task.due_date}")
                 found = True
 
         if not found: # if found == False:
@@ -80,7 +103,7 @@ def view_unfinished(tasks):
         for task in tasks:
             if task.status == False:
                 count += 1
-                print(f"{count}. {task.name}\t{task.priority}")
+                print(f"{count}. {task.name}\t{task.priority}\t{task.due_date}")
                 found = True
 
         if not found:
@@ -111,9 +134,9 @@ def view_priority(tasks):
 
                 status = task.status
                 if status:
-                    print(f"{count}.  ✔ {task.name}")
+                    print(f"{count}.  ✔ {task.name}\t{task.due_date}")
                 else:
-                    print(f"{count}. x {task.name}")
+                    print(f"{count}. x {task.name}\t{task.due_date}")
 
                 found = True
 
@@ -132,9 +155,9 @@ def view_priority(tasks):
 
                 status = task.status
                 if status:
-                    print(f"{count}.  ✔ {task.name}")
+                    print(f"{count}.  ✔ {task.name}\t{task.due_date}")
                 else:
-                    print(f"{count}. x {task.name}")
+                    print(f"{count}. x {task.name}\t{task.due_date}")
 
                 found = True
 
@@ -152,9 +175,9 @@ def view_priority(tasks):
 
                 status = task.status
                 if status:
-                    print(f"{count}.  ✔ {task.name}")
+                    print(f"{count}.  ✔ {task.name}\t{task.due_date}")
                 else:
-                    print(f"{count}. x {task.name}")
+                    print(f"{count}. x {task.name}\t{task.due_date}")
 
                 found = True
 
@@ -162,6 +185,7 @@ def view_priority(tasks):
             print("There is no low priority task.")
 
 def add_task(tasks):
+    #adding task name 
     while True:
         task_name = input("Enter task: ").strip()
 
@@ -169,19 +193,35 @@ def add_task(tasks):
             print("Task name can't be blank.")
         else:
             break  # Input is valid, exit the loop
+
+    #adding due date
+    while True:
+        due_date_input = input("Due date (YYYY-MM-DD, leave blank for none): ").strip()
+
+        if due_date_input == "":
+            due_date = None
+            break
+        else:
+            try:
+                due_date = datetime.strptime(due_date_input, "%Y-%m-%d").date()
+                break
+            except ValueError:
+                print("Invalid date. Please use YYYY-MM-DD.")
+                
+    #adding priority
     while True:
         priority = input("Priority (low/medium/high): ").lower() # asking input for the priority from the user
 
         # making sure that the user doesn't input random thing except low, medium, and high // input validation
         if priority in ["low", "medium", "high"]:
-            new_task = Task(task_name, priority)
+            new_task = Task(task_name, priority, due_date)
             tasks.append(new_task)
             print("Task added!")
             break
         else:
             print("Invalid priority. Please type low, medium, or high.")
 
-def edit_task(tasks):
+def edit_task_name(tasks):
     view_tasks(tasks)
 
     try:
@@ -206,6 +246,7 @@ def edit_task(tasks):
         print("Task updated!")
         print("To change status, use 'Mark as done/undone' option.")
         print("To change priority, use 'Edit priority' option.")
+        print("To change due date, use 'Edit due date' option.")
     else:
         print("Invalid input")
 
@@ -344,6 +385,37 @@ def edit_priority(tasks):
                 break
             else:
                 print("Invalid priority. Please type low, medium, or high.")
+def edit_due_date(tasks):
+    view_tasks(tasks) # u must first show the list for them to choose
+
+    try:
+        index = int(input("Which task number's due date do you want to edit? ")) - 1
+            #this will be the no user choose
+            #to readjust the i+1 above
+    except:
+        print("Invalid input")
+        return
+
+    if 0 <= index < len(tasks):
+        while True:
+            due_date_input = input("New due date (YYYY-MM-DD) or leave blank: ").strip()
+
+            if due_date_input == "":
+                tasks[index].due_date = None
+                print("Due date removed.")
+                break
+
+            try:
+                tasks[index].due_date = datetime.strptime(
+                    due_date_input,
+                    "%Y-%m-%d"
+                ).date()
+
+                print("Due date changed successfully!")
+                break
+
+            except ValueError:
+                print("Invalid date. Please use YYYY-MM-DD.")
 
 def search_task(tasks):
     keyword = input("Enter task name to search: ").lower()
@@ -359,7 +431,7 @@ def search_task(tasks):
 
         if matches:
             status = "✔" if task.status else "x"
-            print(f"{status} {task.name}")
+            print(f"{status} {task.name}\t{task.priority}\t{task.due_date}")
             found = True
             match_count += 1
 
@@ -378,12 +450,13 @@ while True:
     print("3. View only completed tasks")
     print("4. View only unfinished tasks")
     print("5. View tasks by priority")
-    print("6. Edit task")
+    print("6. Edit task name")
     print("7. Remove task")
     print("8. Mark as done")
     print("9. Mark as undone")
     print("10. Edit priority")
-    print("11. Search task")
+    print("11. Edit Due Date")
+    print("12. Search task")
     print("0. Exit")
 
 
@@ -412,9 +485,9 @@ while True:
     elif choice == "5":
         view_priority(tasks)
 
-    # edit task
+    # edit task name
     elif choice == "6":
-        edit_task(tasks)
+        edit_task_name(tasks)
 
     # remove task
     elif choice == "7":
@@ -432,8 +505,12 @@ while True:
     elif choice == "10":
         edit_priority(tasks)
 
-    # search/filter tasks
+    # edit due date
     elif choice == "11":
+        edit_due_date(tasks)
+
+    # search/filter tasks
+    elif choice == "12":
         search_task(tasks)
 
         # exit
